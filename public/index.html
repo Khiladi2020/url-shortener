@@ -1,0 +1,212 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Url Shortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Url Shortener</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <!-- <a class="nav-link active" aria-current="page" href="/">About</a> -->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <section>
+            <div class="container mt-5">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                            aria-selected="true">Main</button>
+                        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                            type="button" role="tab" aria-controls="nav-profile" aria-selected="false">All Data</button>
+                    </div>
+                </nav>
+                <div class="tab-content bg-light p-3" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <p class="text-center" id="title">
+                            Enter any long URL Lets shorten it!
+                        </p>
+                        <h2 class="text-center" style="display: none; margin-top: 100px" id="shorten-url-title">
+                            Your short url
+                        </h2>
+
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Your Long URL:</label>
+                                <input type="text" class="form-control" id="long_url_field"
+                                    aria-describedby="emailHelp">
+                            </div>
+                            <button type="submit" class="btn btn-info" id="shorten_btn">Submit</button>
+                        </form>
+
+                        <div id="form-result"
+                            class="d-flex justify-content-center align-items-center border border-success">
+
+                        </div>
+
+                    </div>
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-info" id="all_data_btn">Fetch All Data</button>
+                        </div>
+                        <div class="mt-2">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Long Url</th>
+                                        <th scope="col">Short Url</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-main-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <!-- Button to Trigger -->
+            <div style="position: fixed; bottom: 5; right: 5;">
+                <button type="button" class="btn btn-link bg-light" data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop">About</button>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">About</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Github ID: khiladi2020</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Understood</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script>
+        const make_request = (url, data) => {
+            return new Promise((resolve, reject) => {
+                fetch(url, data)
+                    .then(resp => resp.json())
+                    .then(result => resolve(result))
+                    .catch(err => reject(err))
+            })
+        }
+
+        const disp_shorten_url = (result) => {
+            const container_elem = document.getElementById('form-result')
+
+            while (container_elem.firstChild) {
+                container_elem.removeChild(container_elem.firstChild)
+            }
+
+            const disp_elem = document.createElement('span')
+            const disp_link = document.createElement('a')
+
+            disp_elem.innerText = `Short URL: `
+            disp_elem.style.marginRight = "7px"
+            disp_link.href = result.url
+            disp_link.innerText = result.url
+
+            container_elem.appendChild(disp_elem)
+            container_elem.appendChild(disp_link)
+        }
+
+        const fetch_short_url = async (e) => {
+            e.preventDefault()
+
+            const long_url = document.getElementById('long_url_field').value
+            const payload = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: long_url })
+            }
+
+            const result = await make_request('/', payload)
+            console.log(result)
+            disp_shorten_url(result)
+        }
+
+        const disp_all_data = (result) => {
+            const container_elem = document.getElementById('table-main-body')
+
+            while (container_elem.firstChild) {
+                container_elem.removeChild(container_elem.firstChild)
+            }
+
+            result.reverse().forEach((val, ind) => {
+                const tr_tag = document.createElement('tr')
+                const th = document.createElement('th')
+                const td_long_url = document.createElement('td')
+                const td_short_url = document.createElement('td')
+                const link = document.createElement('a')
+
+                th.setAttribute("scope", "row");
+
+                th.innerText = ind+1
+                td_long_url.innerText = val.URL
+                link.innerText = val.HASH_ID
+                link.href = val.HASH_ID
+
+                td_short_url.appendChild(link)
+                tr_tag.appendChild(th)
+                tr_tag.appendChild(td_long_url)
+                tr_tag.appendChild(td_short_url)
+                container_elem.appendChild(tr_tag)
+            })
+        }
+
+        const fetch_all_data = async () => {
+            const payload = {
+                method: 'GET'
+            }
+            const result = await make_request('/get-data', payload)
+            console.log(result)
+            disp_all_data(result.data)
+        }
+
+        document.getElementById('shorten_btn').addEventListener('click', fetch_short_url)
+        document.getElementById('all_data_btn').addEventListener('click', fetch_all_data)
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
