@@ -9,5 +9,12 @@ URL shortener Using NodeJS, Express & MySQL to generate url shortener & redirect
 - Using shortid to generate unique has for each url shortener
 
 
+## Steps to run
+- use command `npm install`
+- update Database credentials in defaults file of configs folder
+- import dump sql file
+- use command `npm start` to start the project
+
+
 
 
